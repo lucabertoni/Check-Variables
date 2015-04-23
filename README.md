@@ -13,8 +13,6 @@ the list, for every function in the file (variables that aren't in in function-r
 are not classified), of undeclared variables. With the expression "declared variables" I suggest
 all the variables that are located after words local,private and public
 
-If you want to execute the code, uncomment lines above
-
 
 Author:        Luca Bertoni
 
