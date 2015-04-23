@@ -22,6 +22,8 @@ Version:       1.0
 
 Last Update:   23/04/2015
 
-Email Address: luca.bertoni24@gmail.com
+Contacts:
 
-Facebook:      https://www.facebook.com/LucaBertoniLucaBertoni
+  Email Address: luca.bertoni24@gmail.com
+
+  Facebook:      https://www.facebook.com/LucaBertoniLucaBertoni
