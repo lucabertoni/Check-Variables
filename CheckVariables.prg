@@ -1035,3 +1035,4 @@ class checkVariables
 
       return lc_aRet
 endclass
+
