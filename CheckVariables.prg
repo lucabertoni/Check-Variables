@@ -33,7 +33,7 @@ local lc_oCheckVariables,lc_aRet,lc_aFile
 
 lc_logFile = new File()
 
-lc_pathLogFile = "logVariabiliNonDichiarate.txt"
+lc_pathLogFile = "C:\Documents and Settings\luca\Desktop\logVariabiliNonDichiarate.txt"
 
 lc_bLogVariabiliNonDichiarate = false
 
@@ -54,9 +54,11 @@ endif
 lc_oCheckVariables = new checkVariables()
 lc_aFile = new array()
 
-lc_aRet = lc_oCheckVariables.areDeclared("C:\path_to_source.*dBase")
+//lc_aRet = lc_oCheckVariables.areDeclared("C:\path_to_source.*dBase")
+lc_aRet = lc_oCheckVariables.areDeclared("C:\Documents and Settings\luca\Desktop\api.prg")
 lc_aFile.add(lc_aRet)
 
+//lc_oCheckVariables.stampaArray(lc_aFile,"C:\path_to_file_that_contains_the_list.txt")
 lc_oCheckVariables.stampaArray(lc_aFile,lc_logFile)
 
 release object lc_aRet
@@ -730,12 +732,12 @@ class checkVariables
       return lc_sRet
 
    // Cosa fa				:			Stampa l'array ricavato in un file
-   // pr_assocarray		:			Array -> array da stampare
+   // pr_array		:			Array -> array da stampare
    // pr_file				:			File (oggetto), file nel quale salvare
-   function stampaArray(pr_assocarray,pr_file)
+   function stampaArray(pr_array,pr_file)
       local lc_aRet,lc_logFile,lc_aFunzione,lc_aVariabile,lc_app
 
-      lc_aRet = pr_assocarray
+      lc_aRet = pr_array
 
       lc_logFile = pr_file
 
@@ -858,6 +860,7 @@ class checkVariables
 
          lc_text = lc_oFile.gets()
          lc_text = rtrim(lc_text)
+         lc_text = lower(lc_text)
 
          // Cosa fa						:			Esplode una stringa
          // pr_stringa					:			stringa, stringa da esplodere
