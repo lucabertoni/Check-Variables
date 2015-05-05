@@ -28,48 +28,25 @@
 
 */
 
-/*
-local lc_oCheckVariables,lc_aRet,lc_aFile
 
-lc_logFile = new File()
+local lc_oCheckVariables,lc_aRet,lc_pathLogFile
 
 lc_pathLogFile = "C:\Documents and Settings\luca\Desktop\logVariabiliNonDichiarate.txt"
 
-lc_bLogVariabiliNonDichiarate = false
-
-if FILE(lc_pathLogFile)
-   lc_logFile.open(lc_pathLogFile,"W")
-   lc_bLogVariabiliNonDichiarate = true
-else
-   try
-      lc_logFile.create(lc_pathLogFile)
-
-      lc_logFile.open(lc_pathLogFile,"W")
-      lc_bLogVariabiliNonDichiarate = true
-   catch(Exception e)
-      ? "Impossibile creare il file log delle variabili non dichiarate"
-   endtry
-endif
-
 lc_oCheckVariables = new checkVariables()
-lc_aFile = new array()
 
 //lc_aRet = lc_oCheckVariables.areDeclared("C:\path_to_source.*dBase")
-lc_aRet = lc_oCheckVariables.areDeclared("C:\Documents and Settings\luca\Desktop\api.prg")
-lc_aFile.add(lc_aRet)
+lc_aRet = lc_oCheckVariables.areDeclared("C:\Documents and Settings\luca\Desktop\api1.prg")
 
 //lc_oCheckVariables.stampaArray(lc_aFile,"C:\path_to_file_that_contains_the_list.txt")
-lc_oCheckVariables.stampaArray(lc_aFile,lc_logFile)
+lc_oCheckVariables.stampaArray(lc_aRet,lc_pathLogFile)
 
 release object lc_aRet
 lc_aRet = NULL
 
-release object lc_aFile
-lc_aFile = NULL
-
 release object lc_oCheckVariables
 lc_oCheckVariables = NULL
-*/
+
 
 class checkVariables
 	
@@ -732,58 +709,73 @@ class checkVariables
       return lc_sRet
 
    // Cosa fa				:			Stampa l'array ricavato in un file
-   // pr_array		:			Array -> array da stampare
-   // pr_file				:			File (oggetto), file nel quale salvare
-   function stampaArray(pr_array,pr_file)
-      local lc_aRet,lc_logFile,lc_aFunzione,lc_aVariabile,lc_app
+   // pr_assocarray		:			Array, array da stampare
+   // pr_path				:			stringa, percorso del file di log da usare
+   function stampaArray(pr_assocarray,pr_path)
+      local lc_aRet,lc_logFile,lc_aFunzione,lc_aVariabile,lc_path
 
-      lc_aRet = pr_array
+      lc_aRet = pr_assocarray
+      lc_path = pr_path
+      lc_logFile = new file()
 
-      lc_logFile = pr_file
+      if FILE(lc_path)
+      	try
+            lc_logFile.open(lc_path,"A")
+         catch (Exception e)
+				? "Impossibile aprire (in append) il file di log delle variabili non dichiarate"
+         endtry
+      else
+      	try
+            lc_logFile.create(lc_path,"A")
+         catch (Exception e)
+         	? "Impossibile creare il file di log delle variabili non dichiarate"
+            return
+         endtry
+      endif
 
-      for i = 1 to ALEN(lc_aRet)
-      	lc_app = lc_aRet[i]
-         
-         lc_chiaveFile = lc_app.firstKey
-         for i12 = 1 to lc_app.count()
+      lc_chiaveFile = lc_aRet.firstKey
+      for i = 1 to lc_aRet.count()
 		
-               if lc_chiaveFile == "totale"
-                  lc_chiaveFile = lc_app.nextKey(lc_chiaveFile)
-                  loop
-               endif
+            if lc_chiaveFile == "totale"
+               lc_chiaveFile = lc_aRet.nextKey(lc_chiaveFile)
+               loop
+            endif
 
-               lc_logFile.puts("Nome file: "+lc_chiaveFile)
+            lc_logFile.puts("Nome file: "+lc_chiaveFile)
 		
-               lc_aFunzione = lc_app[lc_chiaveFile]
+            lc_aFunzione = lc_aRet[lc_chiaveFile]
 
-               lc_chiaveFunzione = lc_aFunzione.firstKey
-               for i9 = 1 to lc_aFunzione.count()
+            lc_chiaveFunzione = lc_aFunzione.firstKey
+            for i9 = 1 to lc_aFunzione.count()
 
-                  lc_logFile.puts(chr(9)+lc_chiaveFunzione)
-                  lc_aVariabile = lc_aFunzione[lc_chiaveFunzione]
+               lc_logFile.puts(chr(9)+lc_chiaveFunzione)
+               lc_aVariabile = lc_aFunzione[lc_chiaveFunzione]
 
-                  lc_chiaveVariabile = lc_aVariabile.firstKey
-                  for i24 = 1 to lc_aVariabile.count()
+               lc_chiaveVariabile = lc_aVariabile.firstKey
+               for i = 1 to lc_aVariabile.count()
 
-                     lc_logFile.puts(chr(9)+chr(9)+lc_chiaveVariabile)
-                     lc_logFile.puts(chr(9)+chr(9)+chr(9)+"Riga: "+lc_aVariabile[lc_chiaveVariabile])
+                  lc_logFile.puts(chr(9)+chr(9)+lc_chiaveVariabile)
+                  lc_logFile.puts(chr(9)+chr(9)+chr(9)+"Riga: "+lc_aVariabile[lc_chiaveVariabile])
       	
-                     lc_chiaveVariabile = lc_aVariabile.nextKey(lc_chiaveVariabile)
-                  next
+                  lc_chiaveVariabile = lc_aVariabile.nextKey(lc_chiaveVariabile)
+               next
 				   	
-                  lc_chiaveFunzione = lc_aFunzione.nextKey(lc_chiaveFunzione)
-               next	
+               lc_chiaveFunzione = lc_aFunzione.nextKey(lc_chiaveFunzione)
+            next	
 
-               lc_chiaveFile = lc_app.nextKey(lc_chiaveFile)
+            lc_chiaveFile = lc_aRet.nextKey(lc_chiaveFile)
 
-         next
-         lc_logFile.puts("Totale: "+lc_aRet[i]['totale'])
-		next
+      next
+      lc_logFile.puts("Totale: "+lc_aRet['totale'])
+
+      lc_logFile.close()
+      release object lc_logFile
+      lc_logFile = NULL
 
       return
 
    // Cosa fa			:			Controlla se le varibili presenti nel file sono state dichiarate
-   // pr_file			:			File da analizzare, composto come un normalissimo sorgente dBase
+   // pr_file			:			stringa -> File da analizzare, composto come un normalissimo sorgente dBase
    // Ritorna			:			Assoc AssocArray, così formato:
    //									lc_aRet[nome_file]
    //												[nome_funzione]
@@ -801,6 +793,7 @@ class checkVariables
 
       lc_oFile = new file()
       lc_aRet = new AssocArray()
+      lc_aRet["totale"] = 0
 
       lc_aFunzione = new assocarray()
       lc_aVariabiliNonDichiarate = new assocarray()
@@ -828,6 +821,7 @@ class checkVariables
 
       // Apro il file in sola lettura
       lc_oFile.open(pr_file,"R")
+      lc_filePath = lc_oFile.path
 
       // Controllo di non essere alla fine del file
       if lc_oFile.eof()
@@ -1020,7 +1014,7 @@ class checkVariables
 
       enddo
 
-      lc_aRet[pr_file] = lc_aFunzione
+      lc_aRet[lc_filePath] = lc_aFunzione
       lc_aRet["totale"] = lc_count
       lc_path = lc_oFile.path
       lc_oFile.close()
@@ -1035,4 +1029,3 @@ class checkVariables
 
       return lc_aRet
 endclass
-
